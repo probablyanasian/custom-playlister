@@ -38,7 +38,7 @@ while not options['randomize']:
         break
 
 lists = glob.glob(os.getcwd()+'/playlists/*.txt')
-print('lists', lists, os.getcwd())
+
 while True:
     for itemnum in range(len(lists)):
         print(itemnum, lists[itemnum].replace(f'{os.getcwd()}/playlists/', '').replace('.txt', ''))
