@@ -19,19 +19,22 @@ while True:
     else:
         options['playlist'] = lists[int(opt)]
         break
-
+del itemnum
+del opt
 
 songlist = open(options['playlist'], 'r')
 opensonglist = songlist.readlines()
 songs = [x.rstrip() for x in opensonglist if x[0] != '#']
+list_length = len(songs)
 songlist.close()
 
-playlist_name = lists[itemnum].replace(f'{os.getcwd()}/playlists/', '').replace('.txt', '').replace('.bkup', '')
+playlist_name = options['playlist'].replace(f'{os.getcwd()}/playlists/', '').replace('.txt', '').replace('.bkup', '')
 for item in songs:
-    command = f'youtube-dl -s -f bestaudio --restrict-filename --download-archive {os.getcwd()}/archive_files/{playlist_name}_archive.txt {magicLink}{item.replace("https://youtu.be/", "", 1)} -o "~/Music/{playlist_name}/%(title)s_%(id)s.%(ext)s"'
-    print(command)
+    print(f'Downloading song {songs.index(item)+1} out of {list_length}')
+    command = f'youtube-dl -f bestaudio --restrict-filename --download-archive {os.getcwd()}/archive_files/{playlist_name}_archive.txt {magicLink}{item.replace("https://youtu.be/", "", 1)} -o "~/Music/{playlist_name}/%(title)s_%(id)s.%(ext)s"'
     p = Popen([command], shell=True)
     p.wait()
+del command
 
 while True:
     option = input(f'Write to: {options["playlist"].replace(".bkup", "")}.bkup? (Y/n): ')
@@ -39,10 +42,10 @@ while True:
         command = f'mv {options["playlist"]} {options["playlist"].replace(".bkup", "")}.bkup'
         p = Popen([command], shell=True)
         p.wait()
+        break
     else: break
 
 new_list = open(options['playlist'].replace('.bkup', ''), 'w+')
 for item in glob.glob(f'{pathlib.Path.home()}/Music/{playlist_name}/*.*'):
-    print(item)
     new_list.write(f'file://{item}\n')
 new_list.close()
