@@ -10,9 +10,10 @@ start_time = time.time()
 index = 0
 magicLink = 'https://www.youtube.com/watch?v='
 options = {'randomize': False, 'novideo': False,
-           'pickIndex': False, 'playlist': ''}
+           'localAudio': False, 'pickIndex': False, 'playlist': ''}
 queries = {'randomize': 'Randomize play order? (Y/n): ',
-           'novideo': 'Play without video? (Y/n): '}
+           'novideo': 'Play without video? (Y/n): ',
+           'localAudio': 'Play playlist from local Music folder? (Y/n): '}
 for i in queries.keys():
     while True:
         opt = input(queries[i]).lower()
@@ -41,11 +42,14 @@ while not options['randomize']:
         break
 
 lists = glob.glob(os.getcwd()+'/playlists/*.txt')
-
+if options['localAudio']:
+    lists = [item for item in lists if '.bkup' not in item]
+else:
+    lists = [item for item in lists if '.bkup' in item]
 while True:
     for itemnum in range(len(lists)):
         print(itemnum, lists[itemnum].replace(
-            f'{os.getcwd()}/playlists/', '').replace('.txt', ''))
+            f'{os.getcwd()}/playlists/', '').replace('.txt', '').replace('.bkup', ''))
     opt = input('Choose playlist num: ')
     if len(opt) == 0:
         continue
@@ -100,7 +104,8 @@ while True:
                 index += 1
     except KeyboardInterrupt:
         duration = time.time()-start_time
-        time_played = {'Week':int(duration/604800), 'Day':int((duration%604800)/86400), 'Hour':int((duration%86400)/3600), 'Minute':int((duration%3600)/60), 'Second':int((duration%60))}
+        time_played = {'Week': int(duration/604800), 'Day': int((duration % 604800)/86400), 'Hour': int(
+            (duration % 86400)/3600), 'Minute': int((duration % 3600)/60), 'Second': int((duration % 60))}
         to_print = ''
         for amount in time_played.keys():
             value = time_played[amount]

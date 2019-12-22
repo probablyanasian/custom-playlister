@@ -1,5 +1,6 @@
 import os
 import glob
+import pathlib
 from subprocess import Popen
 
 options = {}
@@ -32,13 +33,16 @@ for item in songs:
     p = Popen([command], shell=True)
     p.wait()
 
-command = f'mv {options["playlist"].replace(".bkup", "")} {options["playlist"].replace(".bkup", "")}.bkup'
-p = Popen([command], shell=True)
-p.wait()
+while True:
+    option = input(f'Write to: {options["playlist"].replace(".bkup", "")}.bkup? (Y/n): ')
+    if option.lower() in ['y', 'yes']:
+        command = f'mv {options["playlist"]} {options["playlist"].replace(".bkup", "")}.bkup'
+        p = Popen([command], shell=True)
+        p.wait()
+    else: break
 
 new_list = open(options['playlist'].replace('.bkup', ''), 'w+')
-print(glob.glob(f'~/Music/{playlist_name}/*'))
-for item in glob.glob(f'~/Music/{playlist_name}/*'):
+for item in glob.glob(f'{pathlib.Path.home()}/Music/{playlist_name}/*.*'):
     print(item)
     new_list.write(f'file://{item}\n')
 new_list.close()
