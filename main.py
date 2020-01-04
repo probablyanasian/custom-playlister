@@ -4,14 +4,32 @@ import sys
 import secrets
 import glob
 import time
+import random
 from subprocess import Popen, STDOUT, PIPE
 
+
+def formatDuration(duration):
+    time_played = {'Week': int(duration/604800), 'Day': int((duration % 604800)/86400), 'Hour': int(
+        (duration % 86400)/3600), 'Minute': int((duration % 3600)/60), 'Second': int((duration % 60))}
+    to_print = ''
+    for amount in time_played.keys():
+        value = time_played[amount]
+        if value > 0:
+            to_print += f' {str(value)} '
+            to_print += amount
+            if value > 1:
+                to_print += 's'
+    return(to_print)
+
+
 start_time = time.time()
+last_time = time.time()
 index = 0
 magicLink = 'https://www.youtube.com/watch?v='
-options = {'randomize': False, 'novideo': False,
+options = {'randomize': False, 'pseudorandom': False, 'novideo': False,
            'localAudio': False, 'pickIndex': False, 'playlist': ''}
 queries = {'randomize': 'Randomize play order? (Y/n): ',
+           'pseudorandom': 'Play in pseudorandom mode? (Y/n): ',
            'novideo': 'Play without video? (Y/n): ',
            'localAudio': 'Play playlist from local Music folder? (Y/n): '}
 for i in queries.keys():
@@ -59,13 +77,20 @@ while True:
         options['playlist'] = lists[int(opt)]
         break
 
+songlist = open(options['playlist'], 'r')
+opensonglist = songlist.readlines()
+songs = [x.rstrip() for x in opensonglist if x[0] != '#']
+
+if options['pseudorandom']:
+    pseudorandom = list(range(len(songs)))
+
 while True:
     try:
-        songlist = open(options['playlist'], 'r')
-        opensonglist = songlist.readlines()
-        songs = [x.rstrip() for x in opensonglist if x[0] != '#']
 
-        if options['randomize']:
+        if options['pseudorandom']:
+            index = random.choice(pseudorandom)
+            pseudorandom.remove(index)
+        elif options['randomize']:
             index = secrets.randbelow(len(songs))
         elif options['pickIndex']:
             while True:
@@ -91,29 +116,29 @@ while True:
 
         print(f'Playing index: {index}')
         if 'https://youtu' not in songs[index]:
-            print('Playing: ' + ' '.join(songs[index].replace('/', ' ').split(' ')[-1:][0].replace('_',' ').split(' ')[0:-1]))
+            print('Playing: ' + ' '.join(songs[index].replace('/', ' ').split(
+                ' ')[-1:][0].split('.')[0][0:-12].replace('_', ' ').split(' ')))
 
         p = Popen([command], shell=True)
         songlist.close()
         p.wait()
+        time.sleep(2)
 
         if not options['randomize']:
             if index == len(songs):
                 index = 0
             else:
                 index += 1
+
+        if len(pseudorandom) == 0:
+            pseudorandom = list(range(len(songs)))
+
+        print(
+            f'Played playlist "{options["playlist"].replace(os.getcwd()+"/playlists/", "").replace(".txt", "").replace(".bkup", "")}" for: {formatDuration(time.time()-start_time)}')
+
     except KeyboardInterrupt:
         duration = time.time()-start_time
-        time_played = {'Week': int(duration/604800), 'Day': int((duration % 604800)/86400), 'Hour': int(
-            (duration % 86400)/3600), 'Minute': int((duration % 3600)/60), 'Second': int((duration % 60))}
-        to_print = ''
-        for amount in time_played.keys():
-            value = time_played[amount]
-            if value > 0:
-                to_print += f' {str(value)} '
-                to_print += amount
-                if value > 1:
-                    to_print += 's'
-
-        print(f'Played for:{to_print}')
+        to_print = formatDuration(duration)
+        print(
+            f'Played playlist "{options["playlist"].replace(os.getcwd()+"/playlists/", "").replace(".txt", "").replace(".bkup", "")}" for: {to_print}')
         sys.exit(0)
