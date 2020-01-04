@@ -116,8 +116,7 @@ while True:
 
         print(f'Playing index: {index}')
         if 'https://youtu' not in songs[index]:
-            print('Playing: ' + ' '.join(songs[index].replace('/', ' ').split(
-                ' ')[-1:][0].split('.')[0][0:-12].replace('_', ' ').split(' ')))
+            print('Playing: ' + songs[index].split('/')[-1].split('.')[0][0:-12].replace('_', ' ')))
 
         p = Popen([command], shell=True)
         songlist.close()
