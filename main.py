@@ -5,6 +5,7 @@ import secrets
 import glob
 import time
 import random
+import re
 from subprocess import Popen, STDOUT, PIPE
 
 
@@ -116,7 +117,7 @@ while True:
 
         print(f'Playing index: {index}')
         if 'https://youtu' not in songs[index]:
-            print('Playing: ' + songs[index].split('/')[-1].split('.')[0][0:-12].replace('_', ' ')))
+            print('Playing: ' + re.search(r'(?:\/)(?!.*\/)(?P<name>.+).{12}\..*$', songs[index]).group("name").replace('_',' '))
 
         p = Popen([command], shell=True)
         songlist.close()
