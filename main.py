@@ -60,11 +60,12 @@ while not options['randomize']:
         options['pickIndex'] = False
         break
 
-lists = glob.glob(os.getcwd()+'/playlists/*.txt')
+lists = glob.glob(os.getcwd()+'/playlists/*')
 if options['localAudio']:
-    lists = [item for item in lists if '.bkup' not in item]
-else:
     lists = [item for item in lists if '.bkup' in item]
+else:
+    lists = [item for item in lists if '.bkup' not in item]
+
 while True:
     for itemnum in range(len(lists)):
         print(itemnum, lists[itemnum].replace(
