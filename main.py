@@ -62,9 +62,9 @@ while not options['randomize']:
 
 lists = glob.glob(os.getcwd()+'/playlists/*')
 if options['localAudio']:
-    lists = [item for item in lists if '.bkup' in item]
-else:
     lists = [item for item in lists if '.bkup' not in item]
+else:
+    lists = [item for item in lists if '.bkup' in item]
 
 while True:
     for itemnum in range(len(lists)):
@@ -116,9 +116,10 @@ while True:
         if options['novideo']:
             command += ' --novideo'
 
-        print(f'Playing index: {index}')
         if 'https://youtu' not in songs[index]:
-            print('Playing: ' + re.search(r'(?:\/)(?!.*\/)(?P<name>.+).{12}\..*$', songs[index]).group("name").replace('_',' '))
+            print('Playing index {index}: ' + re.search(r'(?:\/)(?!.*\/)(?P<name>.+).{12}\..*$', songs[index]).group("name").replace('_',' '))
+        else:
+            print(f'Playing index: {index}')
 
         p = Popen([command], shell=True)
         songlist.close()
