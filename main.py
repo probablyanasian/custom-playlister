@@ -62,14 +62,14 @@ while not options['randomize']:
 
 lists = glob.glob(os.getcwd()+'/playlists/*')
 if options['localAudio']:
-    lists = [item for item in lists if '.bkup' not in item]
+    lists = [item for item in lists if '.local' in item]
 else:
-    lists = [item for item in lists if '.bkup' in item]
+    lists = [item for item in lists if '.local' not in item]
 
 while True:
     for itemnum in range(len(lists)):
         print(itemnum, lists[itemnum].replace(
-            f'{os.getcwd()}/playlists/', '').replace('.txt', '').replace('.bkup', ''))
+            f'{os.getcwd()}/playlists/', '').replace('.txt', '').replace('.bkup', '').replace('.local', ''))
     opt = input('Choose playlist num: ')
     if len(opt) == 0:
         continue
@@ -85,6 +85,8 @@ songs = [x.rstrip() for x in opensonglist if x[0] != '#']
 
 if options['pseudorandom']:
     pseudorandom = list(range(len(songs)))
+
+chosen = options["playlist"].replace(os.getcwd()+'/playlists/', '').replace('.txt', '').replace('.bkup', '').replace('.local', '')
 
 while True:
     try:
@@ -117,7 +119,8 @@ while True:
             command += ' --novideo'
 
         if 'https://youtu' not in songs[index]:
-            print('Playing index {index}: ' + re.search(r'(?:\/)(?!.*\/)(?P<name>.+).{12}\..*$', songs[index]).group("name").replace('_',' '))
+            print(f'Playing index {index}: ' + re.search(
+                r'(?:\/)(?!.*\/)(?P<name>.+).{12}\..*$', songs[index]).group("name").replace('_', ' '))
         else:
             print(f'Playing index: {index}')
 
@@ -136,11 +139,11 @@ while True:
             pseudorandom = list(range(len(songs)))
 
         print(
-            f'Played playlist "{options["playlist"].replace(os.getcwd()+"/playlists/", "").replace(".txt", "").replace(".bkup", "")}" for: {formatDuration(time.time()-start_time)}')
+            f'Played playlist "{chosen}" for: {formatDuration(time.time()-start_time)}')
 
     except KeyboardInterrupt:
         duration = time.time()-start_time
         to_print = formatDuration(duration)
         print(
-            f'Played playlist "{options["playlist"].replace(os.getcwd()+"/playlists/", "").replace(".txt", "").replace(".bkup", "")}" for: {to_print}')
+            f'Played playlist "{chosen}" for: {to_print}')
         sys.exit(0)
